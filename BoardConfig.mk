@@ -67,24 +67,38 @@ AUDIO_FEATURE_ENABLED_WMA_OFFLOAD := true
 AUDIO_USE_LL_AS_PRIMARY_OUTPUT := true
 AUDIO_FEATURE_ENABLED_SND_MONITOR := true
 BOARD_USES_ALSA_AUDIO := true
-USE_CUSTOM_AUDIO_POLICY := 1
-USE_XML_AUDIO_POLICY_CONF := 1
 
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_QCOM := true
+QCOM_BT_READ_ADDR_FROM_PROP := true
+QCOM_BT_USE_BTNV := true
+
+# CAF
+TARGET_QCOM_DISPLAY_VARIANT := caf-msm8996
+TARGET_QCOM_AUDIO_VARIANT := caf-msm8996
+TARGET_QCOM_MEDIA_VARIANT := caf-msm8996
+TARGET_QCOM_BLUETOOTH_VARIANT := caf-msm8996
+TARGET_WLAN_VARIANT := caf
 
 # Camera
 TARGET_PROCESS_SDK_VERSION_OVERRIDE := \
     /system/vendor/bin/mm-qcamera-daemon=27
 USE_DEVICE_SPECIFIC_CAMERA := true
 BOARD_QTI_CAMERA_32BIT_ONLY := true
+TARGET_USES_NON_TREBLE_CAMERA := true
+BOARD_USES_SNAPDRAGONCAMERA_VERSION := 2
 
 # Charger
 BACKLIGHT_PATH := /sys/class/leds/lcd-backlight/brightness
 BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_NO_CHARGER_LED := true
+
+# Crypto
+TARGET_HW_DISK_ENCRYPTION := true
+TARGET_CRYPTFS_HW_PATH := $(DEVICE_PATH)/cryptfs_hw
+TARGET_USES_METADATA_AS_FDE_KEY := true
 
 # Display
 BOARD_USES_ADRENO := true
@@ -105,16 +119,6 @@ SF_VSYNC_EVENT_PHASE_OFFSET_NS := 6000000
 # DRM
 TARGET_ENABLE_MEDIADRM_64 := true
 
-# Enable dexpreopt to speed boot time
-ifeq ($(HOST_OS),linux)
-  ifneq ($(TARGET_BUILD_VARIANT),eng)
-    ifeq ($(WITH_DEXPREOPT),)
-      WITH_DEXPREOPT := true
-      WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY := true
-    endif
-  endif
-endif
-
 # Encryption
 TARGET_HW_DISK_ENCRYPTION := true
 TARGET_USES_METADATA_AS_FDE_KEY := true
@@ -123,6 +127,7 @@ TARGET_USES_METADATA_AS_FDE_KEY := true
 BOARD_HAVE_QCOM_FM := true
 BOARD_HAVE_FM_RADIO := true
 TARGET_QCOM_NO_FM_FIRMWARE := true
+BOARD_DISABLE_FMRADIO_LIBJNI := true
 
 # GPS
 TARGET_NO_RPC := true
@@ -157,6 +162,9 @@ TARGET_PROVIDES_KEYMASTER := true
 TARGET_INIT_VENDOR_LIB := libinit_montana
 TARGET_RECOVERY_DEVICE_MODULES := libinit_montana
 
+# Media
+# TARGET_USES_MEDIA_EXTENSIONS := true
+
 # NFC
 NXP_CHIP_TYPE := pn544
 BOARD_NFC_HAL_SUFFIX := $(TARGET_BOARD_PLATFORM)
@@ -182,9 +190,11 @@ TARGET_BOARD_PLATFORM := msm8937
 TARGET_BOOTLOADER_BOARD_NAME := MSM8937
 TARGET_NO_BOOTLOADER := true
 
-# Power
+# Power HAL
 TARGET_PROVIDES_POWERHAL := true
-TARGET_HAS_NO_WLAN_STATS := true
+
+#QTI
+TARGET_PROVIDES_QTI_TELEPHONY_JAR := true
 
 # Qualcomm support
 BOARD_USES_QCOM_HARDWARE := true
@@ -206,17 +216,7 @@ TARGET_PROVIDES_QTI_TELEPHONY_JAR := true
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
 BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
-
-# Shims
-TARGET_LD_SHIM_LIBS := \
-    /system/vendor/bin/adspd|libshim_adsp.so \
-    /system/vendor/lib/libmot_gpu_mapper.so|libgpu_mapper_shim.so \
-    /system/lib/libjustshoot.so|libjustshoot_shim.so \
-    /system/vendor/lib/libjustshoot.so|libjustshoot_shim.so \
-    /system/vendor/lib64/libmdmcutback.so|libqsap_shim.so
-
-# Thermal
-USE_DEVICE_SPECIFIC_THERMAL := true
+include vendor/omni/sepolicy/sepolicy.mk
 
 # Vendor security patch level
 VENDOR_SECURITY_PATCH := 2019-02-01
